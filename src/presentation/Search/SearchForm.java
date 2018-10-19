@@ -60,6 +60,9 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
         // Center column headers
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
+        // Adjust column widths
+        showTable.getColumnModel().getColumn(0).setMinWidth(400);
+
         showTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {

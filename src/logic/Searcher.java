@@ -14,16 +14,19 @@ public class Searcher {
     }
 
     public void search(String title) {
-        if (m_Searching) {
-            m_Pending = title;
-            return;
-        }
-        m_Searching = true;
+        m_Pending = title;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<Show> shows = Database.findShowsByTitle(title);
-                showsArrived(shows);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (title == m_Pending) {
+                    ArrayList<Show> shows = Database.findShowsByTitle(title);
+                    showsArrived(shows);
+                }
             }
         }).start();
     }
@@ -32,10 +35,6 @@ public class Searcher {
         for (ShowListener listener: m_Listeners) {
             listener.showsArrived(shows);
         }
-        m_Searching = false;
-        if (m_Pending != null)
-            search(m_Pending);
-        m_Pending = null;
     }
 
     public void addShowListener(ShowListener listener) {

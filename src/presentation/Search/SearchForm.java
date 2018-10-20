@@ -2,6 +2,7 @@ package presentation.Search;
 
 import logic.Searcher;
 import logic.Show;
+import main.Controller;
 import presentation.GUIForm;
 
 import javax.swing.*;
@@ -100,8 +101,7 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = showTable.getSelectedRow();
-                System.out.println("Row " + row + " selected.");
-                System.out.println(m_CurrentShows.get(row).getID());
+                Controller.showSeriesInfo(m_CurrentShows.get(row).getID(), m_CurrentShows.get(row).getTitle());
             }
         });
     }

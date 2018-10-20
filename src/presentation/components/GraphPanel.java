@@ -17,39 +17,40 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     private ArrayList<DataPoint> m_Points = null;
     private DataPoint m_SelectedPoint = null;
 
-    private static final int LEFT_MARGIN = 40;
-    private static final int TOP_MARGIN = 25;
-    private static final int RIGHT_MARGIN = 10;
-    private static final int BOTTOM_MARGIN = 40;
-    private static final int LEADING = 5;
-    private static final int RATING_TEXT_HEIGHT = 10;
-    private static final int POPUP_TEXT_HEIGHT = 8;
-    private static final int TITLE_HEIGHT = 20;
-    private static final int POPUP_MARGIN = 5;
-    private static final int POPUP_OFFSET = 10;
-    private static final int ARROW_SIZE = 8;
-    private static final int MIN_INFO_WIDTH = 120;
-    private BasicStroke m_RegularStroke;
-    private BasicStroke m_AxisStroke;
-    private BasicStroke m_RegressionStroke;
-    private BasicStroke m_RegressionBorderStroke;
-    private static final int POPUP_FONT_SIZE = 10;
-    private static final int REGULAR_FONT_SIZE = 12;
-    private static final int TITLE_FONT_SIZE = 18;
-    private Font m_PopupFont;
-    private Font m_RegularFont;
-    private Font m_TitleFont;
-    private Color m_InfoColor;
+    private class Sizes {
+        float leftMargin;
+        float topMargin;
+        float rightMargin;
+        float bottomMargin;
+        float leading;
+        float ratingTextHeight;
+        float popupTextHeight;
+        float titleHeight;
+        float popupMargin;
+        float popupOffset;
+        float arrowSize;
+        float minInfoWidth;
+        float pointRadius;
+        float pointSize;
+        float innerPointRadius;
+        float innerPointSize;
+        float popupFontSize;
+        float regularFontSize;
+        float titleFontSize;
+        BasicStroke regularStroke;
+        BasicStroke axisStroke;
+        BasicStroke regressionStroke;
+        BasicStroke regressionBorderStroke;
+        Font popupFont;
+        Font regularFont;
+        Font titleFont;
+    }
+
+    private Sizes m_Sizes;
+    Color m_InfoColor;
 
     public GraphPanel() {
         super();
-        m_AxisStroke = new BasicStroke(2);
-        m_RegressionStroke = new BasicStroke(2);
-        m_RegressionBorderStroke = new BasicStroke(4);
-        m_RegularStroke = new BasicStroke(1);
-        m_PopupFont = new Font("TimesRoman", Font.PLAIN, POPUP_FONT_SIZE);
-        m_RegularFont = new Font("TimesRoman", Font.PLAIN, REGULAR_FONT_SIZE);
-        m_TitleFont = new Font("TimesRoman", Font.PLAIN, TITLE_FONT_SIZE);
         m_InfoColor = new Color(255, 255, 240);
         addMouseMotionListener(this);
         addMouseListener(this);
@@ -70,6 +71,7 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
 
+        initSizes(panelWidth, panelHeight);
         Graphics2D g2 = (Graphics2D)g;
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
@@ -103,32 +105,66 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         maxRating = (float)Math.ceil(2 * maxRating) / 2;
 
         g2.setColor(Color.YELLOW);
-        g2.setFont(m_TitleFont);
+        g2.setFont(m_Sizes.titleFont);
         int width = g2.getFontMetrics().stringWidth(m_Title);
-        g2.drawString(m_Title, (panelWidth - width) / 2, panelHeight - TITLE_HEIGHT / 2);
-        g2.setFont(m_RegularFont);
-        drawAxes(g2, panelWidth - LEFT_MARGIN - RIGHT_MARGIN,
-                panelHeight - TOP_MARGIN - BOTTOM_MARGIN, minRating, maxRating);
-        plotPoints(panelWidth - LEFT_MARGIN - RIGHT_MARGIN,
-                panelHeight - TOP_MARGIN - BOTTOM_MARGIN, minRating, maxRating);
+        g2.drawString(m_Title, (panelWidth - width) / 2, panelHeight - m_Sizes.titleHeight / 2);
+        g2.setFont(m_Sizes.regularFont);
+        drawAxes(g2, Math.round(panelWidth - m_Sizes.leftMargin - m_Sizes.rightMargin),
+                Math.round(panelHeight - m_Sizes.topMargin - m_Sizes.bottomMargin), minRating, maxRating);
+        plotPoints(Math.round(panelWidth - m_Sizes.leftMargin - m_Sizes.rightMargin),
+                Math.round(panelHeight - m_Sizes.topMargin - m_Sizes.bottomMargin), minRating, maxRating);
         drawRegressionLines(g2, maxSeason);
         drawPoints(g2, maxSeason);
 
         drawSelectedInfo(g2, panelWidth, panelHeight);
     }
 
+    private void initSizes(int panelWidth, int panelHeight) {
+        float base = (float) Math.sqrt(panelWidth * panelHeight) / 500.0f;
+        m_Sizes = new Sizes();
+
+        m_Sizes.leftMargin = 40 * base;
+        m_Sizes.topMargin = 25 * base;
+        m_Sizes.rightMargin = 10 * base;
+        m_Sizes.bottomMargin = 40 * base;
+        m_Sizes.leading = 5 * base;
+        m_Sizes.ratingTextHeight = 10 * base;
+        m_Sizes.popupTextHeight = 8 * base;
+        m_Sizes.titleHeight = 20 * base;
+        m_Sizes.popupMargin = 5 * base;
+        m_Sizes.popupOffset = 10 * base;
+        m_Sizes.arrowSize = 8 * base;
+        m_Sizes.minInfoWidth = 120 * base;
+        m_Sizes.popupFontSize = 10 * base;
+        m_Sizes.regularFontSize = 12 * base;
+        m_Sizes.titleFontSize = 18 * base;
+        m_Sizes.pointSize = 8 * base;
+        m_Sizes.pointRadius = m_Sizes.pointSize / 2;
+        m_Sizes.innerPointSize = m_Sizes.pointSize * .75f;
+        m_Sizes.innerPointRadius = m_Sizes.innerPointSize / 2;
+
+        m_Sizes.axisStroke = new BasicStroke(2 * base);
+        m_Sizes.regressionStroke = new BasicStroke(2 * base);
+        m_Sizes.regressionBorderStroke = new BasicStroke(4 * base);
+        m_Sizes.regularStroke = new BasicStroke(1 * base);
+
+        m_Sizes.popupFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.popupFontSize));
+        m_Sizes.regularFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.regularFontSize));
+        m_Sizes.titleFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.titleFontSize));
+    }
+
     private void drawAxes(Graphics2D g2, int width, int height, float minRating, float maxRating) {
+        g2.setStroke(m_Sizes.axisStroke);
+        g2.drawLine(Math.round(m_Sizes.leftMargin), Math.round(m_Sizes.topMargin - m_Sizes.leading), Math.round(m_Sizes.leftMargin), Math.round(m_Sizes.topMargin + height));
+        g2.drawLine(Math.round(m_Sizes.leftMargin), Math.round(m_Sizes.topMargin + height), Math.round(m_Sizes.leftMargin + width), Math.round(m_Sizes.topMargin + height));
+        g2.setStroke(m_Sizes.regularStroke);
         for (float rating = minRating; rating <= maxRating; rating += 0.5f) {
-            int y = Math.round(TOP_MARGIN + height - height * (rating - minRating) / (maxRating - minRating));
+            int y = Math.round(m_Sizes.topMargin + height - height * (rating - minRating) / (maxRating - minRating));
             String ratingString = "" + rating;
             int ratingWidth = g2.getFontMetrics().stringWidth(ratingString);
-            g2.drawString(ratingString, LEFT_MARGIN - 2 * LEADING - ratingWidth, y + RATING_TEXT_HEIGHT / 2);
-            g2.drawLine(LEFT_MARGIN - LEADING, y, LEFT_MARGIN + width, y);
+            g2.drawString(ratingString, m_Sizes.leftMargin - 2 * m_Sizes.leading - ratingWidth, y + m_Sizes.ratingTextHeight / 2);
+            g2.drawLine(Math.round(m_Sizes.leftMargin - m_Sizes.leading), y, Math.round(m_Sizes.leftMargin + width), y);
         }
-        g2.setStroke(m_AxisStroke);
-        g2.drawLine(LEFT_MARGIN, TOP_MARGIN - LEADING, LEFT_MARGIN, TOP_MARGIN + height);
-        g2.drawLine(LEFT_MARGIN, TOP_MARGIN + height, LEFT_MARGIN + width, TOP_MARGIN + height);
-        g2.setStroke(m_RegularStroke);
     }
 
     private void drawRegressionLines(Graphics2D g2, int maxSeason) {
@@ -138,14 +174,14 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         for (Integer seasonNumber: map.keySet()) {
             ArrayList<DataPoint> seasonPoints = map.get(seasonNumber);
             Line2D.Float line = DataPoint.linearRegression(seasonPoints);
-            g2.setStroke(m_RegressionBorderStroke);
+            g2.setStroke(m_Sizes.regressionBorderStroke);
             g2.setColor(Color.BLACK);
             g2.drawLine((int)line.getX1(), (int)line.getY1(), (int)line.getX2(), (int)line.getY2());
-            g2.setStroke(m_RegressionStroke);
+            g2.setStroke(m_Sizes.regressionStroke);
             g2.setColor(ColorChooser.chooseColor(seasonNumber, maxSeason));
             g2.drawLine((int)line.getX1(), (int)line.getY1(), (int)line.getX2(), (int)line.getY2());
         }
-        g2.setStroke(m_RegularStroke);
+        g2.setStroke(m_Sizes.regularStroke);
     }
 
     private void plotPoints(int width, int height, float minRating, float maxRating) {
@@ -158,8 +194,8 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         for (int i = 0; i < m_Episodes.size(); i++) {
             Episode episode = m_Episodes.get(i);
             if (episode.getRating() > 0) {
-                float x = LEFT_MARGIN + width * (i + 0.5f) / length;
-                float y = TOP_MARGIN + height - height * (episode.getRating() - minRating) / (maxRating - minRating);
+                float x = m_Sizes.leftMargin + width * (i + 0.5f) / length;
+                float y = m_Sizes.topMargin + height - height * (episode.getRating() - minRating) / (maxRating - minRating);
                 DataPoint p = new DataPoint(Math.round(x), Math.round(y), episode);
                 m_Points.add(p);
                 // System.out.println(episode.getTitle() + "   " + episode.getSeasonNumber() + "   " + episode.getEpisodeNumber() + "  " + episode.getRating() + " " + episode.getNumVotes());
@@ -170,9 +206,15 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     private void drawPoints(Graphics2D g2, int maxSeason) {
         for (DataPoint p: m_Points) {
             g2.setColor(Color.BLACK);
-            g2.drawArc(p.getX() - 4, p.getY() - 4, 8, 8, 0, 360);
+            int left = Math.round(p.getX() - m_Sizes.pointRadius);
+            int top = Math.round(p.getY() - m_Sizes.pointRadius);
+            int innerLeft = Math.round(left + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+            int innerTop = Math.round(top + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+
+            g2.fillArc(left, top, Math.round(m_Sizes.pointSize), Math.round(m_Sizes.pointSize), 0, 360);
             g2.setColor(ColorChooser.chooseColor(p.getEpisode().getSeasonNumber(), maxSeason));
-            g2.fillArc(p.getX() - 3, p.getY() - 3, 7, 7, 0, 360);
+            g2.fillArc(innerLeft, innerTop,
+                    Math.round(m_Sizes.innerPointSize), Math.round(m_Sizes.innerPointSize), 0, 360);
         }
     }
 
@@ -181,46 +223,47 @@ public class GraphPanel extends JPanel implements MouseInputListener {
             return;
 
         Episode episode = m_SelectedPoint.getEpisode();
-        g2.setFont(m_PopupFont);
+        g2.setFont(m_Sizes.popupFont);
         String title = episode.getTitle();
-        int titleWidth = Math.max(MIN_INFO_WIDTH, g2.getFontMetrics().stringWidth(title));
-        int width = 2 * POPUP_MARGIN + titleWidth;
-        int height = 2 * POPUP_MARGIN + 3 * (POPUP_MARGIN + POPUP_TEXT_HEIGHT);
-        int pointX = m_SelectedPoint.getX();
-        int pointY = m_SelectedPoint.getY();
-        int x, y;
+        float titleWidth = Math.max(m_Sizes.minInfoWidth, g2.getFontMetrics().stringWidth(title));
+        float width = 2 * m_Sizes.popupMargin + titleWidth;
+        float height = 2 * m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight);
+        float pointX = m_SelectedPoint.getX();
+        float pointY = m_SelectedPoint.getY();
+        float x, y;
 
         g2.setColor(Color.BLACK);
 
         if(pointX < panelWidth / 2) {
-            x = pointX + POPUP_OFFSET + ARROW_SIZE;
+            x = pointX + m_Sizes.popupOffset + m_Sizes.arrowSize;
         } else {
-            x = pointX - POPUP_OFFSET - width;
+            x = pointX - m_Sizes.popupOffset - width;
         }
 
         if(pointY < panelHeight / 3) {
-            y = pointY + POPUP_OFFSET + ARROW_SIZE;
+            y = pointY + m_Sizes.popupOffset + m_Sizes.arrowSize;
         } else if (pointY > 2 * panelHeight / 3){
-            y = pointY - POPUP_OFFSET - height;
+            y = pointY - m_Sizes.popupOffset - height;
         } else {
             y = pointY - height / 2;
         }
 
         g2.setColor(m_InfoColor);
-        g2.fillRoundRect(x, y,  width,
-                height, 2 * POPUP_MARGIN, 2 * POPUP_MARGIN);
+        g2.fillRoundRect(Math.round(x), Math.round(y),  Math.round(width),
+                Math.round(height), Math.round(2 * m_Sizes.popupMargin), Math.round(2 * m_Sizes.popupMargin));
         g2.setColor(Color.BLACK);
-        g2.drawRoundRect(x - 1, y - 1,  width + 1,
-                height + 2, 2 * POPUP_MARGIN, 2 * POPUP_MARGIN);
-        centerText(g2, title, x + width / 2, y + POPUP_MARGIN + POPUP_TEXT_HEIGHT);
-        g2.drawLine(x + POPUP_MARGIN, y + 2 * POPUP_MARGIN + POPUP_TEXT_HEIGHT, x + POPUP_MARGIN + titleWidth, y + 2 * POPUP_MARGIN + POPUP_TEXT_HEIGHT);
-        centerText(g2, "Season: " + episode.getSeasonNumber(), x + width / 4, y + POPUP_MARGIN + 2 * (POPUP_MARGIN + POPUP_TEXT_HEIGHT));
-        centerText(g2, "Episode: " + episode.getEpisodeNumber(), x + width / 4, y + POPUP_MARGIN + 3 * (POPUP_MARGIN + POPUP_TEXT_HEIGHT));
-        centerText(g2, "Rating: " + episode.getRating(), x + 3 * width / 4, y + POPUP_MARGIN + 2 * (POPUP_MARGIN + POPUP_TEXT_HEIGHT));
-        centerText(g2, "# Votes: " + episode.getNumVotes(), x + 3 * width / 4, y + POPUP_MARGIN + 3 * (POPUP_MARGIN + POPUP_TEXT_HEIGHT));
+        g2.drawRoundRect(Math.round(x - 1), Math.round(y - 1),  Math.round(width + 1),
+                Math.round(height + 2), Math.round(2 * m_Sizes.popupMargin), Math.round(2 * m_Sizes.popupMargin));
+        centerText(g2, title, Math.round(x + width / 2), Math.round(y + m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        g2.drawLine(Math.round(x + m_Sizes.popupMargin), Math.round(y + 2 * m_Sizes.popupMargin + m_Sizes.popupTextHeight),
+                Math.round(x + m_Sizes.popupMargin + titleWidth), Math.round(y + 2 * m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "Season: " + episode.getSeasonNumber(), x + width / 4, y + m_Sizes.popupMargin + 2 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "Episode: " + episode.getEpisodeNumber(), x + width / 4, y + m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "Rating: " + episode.getRating(), x + 3 * width / 4, y + m_Sizes.popupMargin + 2 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "# Votes: " + episode.getNumVotes(), x + 3 * width / 4, y + m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
     }
 
-    private void centerText(Graphics2D g2, String text, int x, int y){
+    private void centerText(Graphics2D g2, String text, float x, float y){
         int width = g2.getFontMetrics().stringWidth(text);
         g2.drawString(text, x - width / 2, y);
     }
@@ -267,7 +310,7 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     public void mouseMoved(MouseEvent e) {
         // System.out.println(e.getX() + ", " + e.getY());
         if (m_Points != null && m_Points.size() > 0) {
-            DataPoint point = DataPoint.findDataPoint(m_Points, e.getX(), e.getY());
+            DataPoint point = DataPoint.findDataPoint(m_Points, e.getX(), e.getY(), m_Sizes.pointRadius);
             if(point != m_SelectedPoint) {
                 m_SelectedPoint = point;
                 repaint();

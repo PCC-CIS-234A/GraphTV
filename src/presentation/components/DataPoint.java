@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataPoint {
-    private int m_X, m_Y;
+    private float m_X, m_Y;
     private Episode m_Episode;
 
-    public DataPoint(int xVal, int yVal, Episode eVal) {
+    public DataPoint(float xVal, float yVal, Episode eVal) {
         m_X = xVal;
         m_Y = yVal;
         m_Episode = eVal;
     }
 
-    public static DataPoint findDataPoint(ArrayList<DataPoint> points, int x, int y) {
+    public static DataPoint findDataPoint(ArrayList<DataPoint> points, float x, float y, float r) {
         for (DataPoint point : points) {
-            int dist = (x - point.m_X) * (x - point.m_X) + (y - point.m_Y) * (y - point.m_Y);
-            if (dist < 100)
+            float dist = (x - point.m_X) * (x - point.m_X) + (y - point.m_Y) * (y - point.m_Y);
+            if (dist < r * r)
                 return point;
         }
         return null;
@@ -47,14 +47,14 @@ public class DataPoint {
         float sumx=0.0f, sumy=0.0f, sumxx=0.0f, sumyy=0.0f, sumxy=0.0f;
         float mx, my, xxvar, yyvar, xyvar;
         int n = points.size();
-        int minX, maxX;
+        float minX, maxX;
 
         minX = points.get(0).getX();
         maxX = minX;
 
         for (DataPoint point: points) {
-            int x = point.getX();
-            int y = point.getY();
+            float x = point.getX();
+            float y = point.getY();
             if (x < minX)
                 minX = x;
             if (x > maxX)
@@ -75,11 +75,11 @@ public class DataPoint {
         return new Line2D.Float(minX, minX * slope + intercept, maxX, maxX * slope + intercept);
     }
 
-    public int getX() {
+    public float getX() {
         return m_X;
     }
 
-    public int getY() {
+    public float getY() {
         return m_Y;
     }
 

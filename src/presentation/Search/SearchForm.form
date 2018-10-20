@@ -70,7 +70,7 @@
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <text value="Show Series Info"/>
+                  <text value="Show Episode Ratings"/>
                 </properties>
               </component>
               <hspacer id="60183">

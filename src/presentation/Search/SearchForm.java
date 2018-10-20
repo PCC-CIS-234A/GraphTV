@@ -121,14 +121,19 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
     @Override
     public void showsArrived(ArrayList<Show> shows) {
         m_CurrentShows = shows;
-        m_SearchModel.setRowCount(0);
-        for (Show show: shows) {
-            m_SearchModel.addRow(new Object[]{
-                    show.getTitle(),
-                    emptyForZero(show.getStartYear()),
-                    emptyForZero(show.getEndYear()),
-                    emptyForZero(show.getRuntimeMinutes())
-            });
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                m_SearchModel.setRowCount(0);
+                for (Show show: shows) {
+                    m_SearchModel.addRow(new Object[]{
+                            show.getTitle(),
+                            emptyForZero(show.getStartYear()),
+                            emptyForZero(show.getEndYear()),
+                            emptyForZero(show.getRuntimeMinutes())
+                    });
+                }
+            }
+        });
     }
 }

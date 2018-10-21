@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Line2D;
 import java.net.URL;
 import java.util.ArrayList;
@@ -285,7 +287,7 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     private void drawPoints(Graphics2D g2, int maxSeason) {
         for (DataPoint p: m_Points) {
             g2.setColor(Color.BLACK);
-
+            g2.setStroke(m_Sizes.axisStroke);
             if (p.getEpisode().getRating() > 0) {
                 int left = Math.round(p.getX() - m_Sizes.pointRadius);
                 int top = Math.round(p.getY() - m_Sizes.pointRadius);
@@ -297,22 +299,21 @@ public class GraphPanel extends JPanel implements MouseInputListener {
                         Math.round(m_Sizes.innerPointSize), Math.round(m_Sizes.innerPointSize), 0, 360);
             } else {
                 int left = Math.round(p.getX() - m_Sizes.pointRadius);
-                int top = Math.round(p.getY() + m_Sizes.pointRadius - m_Sizes.pointRadius / 4);
+                int top = Math.round(p.getY() + m_Sizes.pointRadius /* - m_Sizes.pointRadius / 4 */);
                 int innerLeft = Math.round(left + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
                 int innerTop = Math.round(top + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
                 int shift = (int)Math.ceil(m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+
+                g2.translate(left, top);
+                FontRenderContext frc = g2.getFontRenderContext();
+                GlyphVector gv = m_Sizes.innerPointFont.createGlyphVector(frc, "?");
+                Shape outline = gv.getOutline();
+
                 g2.setColor(Color.BLACK);
-                g2.setFont(m_Sizes.innerPointFont);
-                g2.drawString("?", innerLeft - shift, innerTop - shift);
-                g2.drawString("?", innerLeft - shift, innerTop);
-                g2.drawString("?", innerLeft - shift, innerTop + shift);
-                g2.drawString("?", innerLeft, innerTop - shift);
-                g2.drawString("?", innerLeft, innerTop + shift);
-                g2.drawString("?", innerLeft + shift, innerTop - shift);
-                g2.drawString("?", innerLeft + shift, innerTop);
-                g2.drawString("?", innerLeft + shift, innerTop + shift);
+                g2.draw(outline);
                 g2.setColor(ColorChooser.chooseColor(p.getEpisode().getSeasonNumber(), maxSeason));
-                g2.drawString("?", innerLeft, innerTop);
+                g2.fill(outline);
+                g2.translate(-left, -top);
             }
         }
     }

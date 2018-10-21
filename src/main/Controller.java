@@ -36,7 +36,7 @@ public class Controller {
     }
 
     public static void showSeriesInfo(String id, String title) {
-        System.out.println("Series info for " + id);
+        // System.out.println("Series info for " + id);
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         InfoGraphForm form = new InfoGraphForm(id, title);

@@ -11,7 +11,7 @@ public class InfoGraphForm extends GUIForm {
     private GraphPanel graphPanel;
 
     public InfoGraphForm(String id, String title) {
-        System.out.println("Showing graph for " + id);
+        // System.out.println("Showing graph for " + id);
         graphPanel.setEpisodes(Episode.fetchEpisodes(id), title);
     }
 

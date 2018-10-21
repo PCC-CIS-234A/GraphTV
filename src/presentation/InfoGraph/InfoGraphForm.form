@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="presentation.InfoGraph.InfoGraphForm">
   <grid id="27dc6" binding="rootPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="600" height="400"/>
+      <xy x="20" y="20" width="1024" height="768"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -10,8 +10,8 @@
       <component id="8d8e6" class="presentation.components.GraphPanel" binding="graphPanel">
         <constraints border-constraint="Center"/>
         <properties>
-          <minimumSize width="600" height="400"/>
-          <preferredSize width="600" height="400"/>
+          <minimumSize width="1024" height="768"/>
+          <preferredSize width="1024" height="768"/>
         </properties>
       </component>
     </children>

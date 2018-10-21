@@ -50,7 +50,7 @@ public class Database {
                         m_ConnectionCloseTask = null;
                         m_Connection.close();
                         m_Connection = null;
-                        System.out.println("Closing idle connection.");
+                        // System.out.println("Closing idle connection.");
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -66,7 +66,7 @@ public class Database {
             return;
         try {
             // Create a database connection with the given username and password.
-            System.out.println("Opening database connection.");
+            // System.out.println("Opening database connection.");
             m_Connection = DriverManager.getConnection(CONNECTION_STRING, "275student", "275student");
         } catch (SQLException e) {
             System.err.println("Error! Couldn't connect to the database!");

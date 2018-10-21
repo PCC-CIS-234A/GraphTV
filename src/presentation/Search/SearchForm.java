@@ -107,7 +107,7 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
     }
 
     private void updateSearch() {
-        System.out.println(searchText.getText());
+        // System.out.println(searchText.getText());
         m_Searcher.search(searchText.getText());
     }
 

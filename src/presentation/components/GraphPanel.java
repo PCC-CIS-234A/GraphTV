@@ -299,7 +299,7 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     @Override
     public void mouseClicked(MouseEvent event) {
         if (m_SelectedPoint != null) {
-            System.out.println("Clicked " + m_SelectedPoint.getEpisode().getID());
+            // System.out.println("Clicked " + m_SelectedPoint.getEpisode().getID());
             try {
                 Desktop.getDesktop().browse(
                         new URL("http://www.imdb.com/title/" + m_SelectedPoint.getEpisode().getID()).toURI()

@@ -145,10 +145,6 @@ public class GraphPanel extends JPanel implements MouseInputListener {
 
     @Override
     public void paint(Graphics g) {
-        if (m_Episodes == null)
-            return;
-        if (m_Episodes.size() == 0)
-            return;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
 
@@ -164,6 +160,11 @@ public class GraphPanel extends JPanel implements MouseInputListener {
 
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, panelWidth, panelHeight);
+
+        if (m_Episodes == null || m_Episodes.size() == 0) {
+            drawNoInfo(g2, panelWidth, panelHeight);
+            return;
+        }
 
         Episode firstEp = m_Episodes.get(0);
         float minRating = firstEp.getRating();
@@ -185,6 +186,11 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         minRating = (float)Math.floor(2 * minRating) / 2;
         maxRating = (float)Math.ceil(2 * maxRating) / 2;
 
+        if (minRating == maxRating) {
+            minRating -= 0.5f;
+            maxRating += 0.5f;
+        }
+
         g2.setColor(Color.YELLOW);
         g2.setFont(m_Sizes.titleFont);
         int width = g2.getFontMetrics().stringWidth(m_Title);
@@ -196,6 +202,29 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         drawPoints(g2, maxSeason);
 
         drawSelectedInfo(g2, panelWidth, panelHeight);
+    }
+
+    private void drawNoInfo(Graphics2D g2, int panelWidth, int panelHeight) {
+        g2.setFont(m_Sizes.titleFont);
+        g2.setColor(Color.YELLOW);
+        g2.setStroke(m_Sizes.axisStroke);
+
+        int w1 = g2.getFontMetrics().stringWidth(m_Title);
+        String line1 = "Sorry, no episode info is";
+        int w2 = g2.getFontMetrics().stringWidth(line1);
+        String line2 = "available for this series.";
+        int w3 = g2.getFontMetrics().stringWidth(line2);
+        int width = Math.max(w1, Math.max(w2, w3));
+
+        g2.drawLine(
+                (int)((panelWidth - width) / 2),
+                (int)((panelHeight - 2.5 * m_Sizes.titleHeight) / 2),
+                (int)((panelWidth + width) / 2),
+                (int)((panelHeight - 2.5 * m_Sizes.titleHeight) / 2)
+        );
+        centerText(g2, m_Title, panelWidth / 2, panelHeight / 2 - 2 * m_Sizes.titleHeight);
+        centerText(g2, line1, panelWidth / 2, panelHeight / 2);
+        centerText(g2, line2, panelWidth / 2, panelHeight / 2 + m_Sizes.titleHeight);
     }
 
     private void drawAxes(Graphics2D g2, float minRating, float maxRating) {

@@ -3,32 +3,32 @@ package logic;
 import data.Database;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Searcher {
     private ArrayList<ShowListener> m_Listeners;
     private String m_Pending = null;
     private boolean m_Searching = false;
+    private Timer m_SearchDelayTimer;
 
     public Searcher() {
         m_Listeners = new ArrayList<>();
+        m_SearchDelayTimer = new Timer("Search Delay Timer");
     }
 
     public void search(String title) {
         m_Pending = title;
-        new Thread(new Runnable() {
+        TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 if (title == m_Pending) {
                     ArrayList<Show> shows = Database.findShowsByTitle(title);
                     showsArrived(shows);
                 }
             }
-        }).start();
+        };
+        m_SearchDelayTimer.schedule(task, 500);
     }
 
     private void showsArrived(ArrayList<Show> shows) {

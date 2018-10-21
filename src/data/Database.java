@@ -5,6 +5,8 @@ import logic.Show;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Database {
     // Connection string for connecting to SQL Server at CISDBSS, using the IMDB database.
@@ -29,15 +31,42 @@ public class Database {
     // The one and only connection object
     private static Connection m_Connection = null;
     private static PreparedStatement m_Statement;
-
+    private static Timer m_ConnectionCloseTimer = new Timer("DB Connection Timer");
+    private static TimerTask m_ConnectionCloseTask = null;
+    private static final long CONNECTION_KEEP_ALIVE = 120000L;
     /**
      * Create a new connection object if there isn't one already.
      */
+    private static void resetConnectionCloseTimer() {
+        if (m_ConnectionCloseTask != null) {
+            m_ConnectionCloseTask.cancel();
+            m_ConnectionCloseTimer.purge();
+        }
+        m_ConnectionCloseTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (m_Connection != null) {
+                        m_ConnectionCloseTask = null;
+                        m_Connection.close();
+                        m_Connection = null;
+                        System.out.println("Closing idle connection.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        m_ConnectionCloseTimer.schedule(m_ConnectionCloseTask, CONNECTION_KEEP_ALIVE);
+    }
+
     private static void connect() {
+        resetConnectionCloseTimer();
         if (m_Connection != null)
             return;
         try {
             // Create a database connection with the given username and password.
+            System.out.println("Opening database connection.");
             m_Connection = DriverManager.getConnection(CONNECTION_STRING, "275student", "275student");
         } catch (SQLException e) {
             System.err.println("Error! Couldn't connect to the database!");
@@ -80,6 +109,7 @@ public class Database {
             }
         } catch (Exception e) {
             System.err.println("Error: Interrupted or couldn't connect to database.");
+            e.printStackTrace();
             m_Statement = null;
             return null;
         }

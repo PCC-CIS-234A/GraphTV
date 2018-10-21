@@ -46,24 +46,27 @@ public class DataPoint {
     public static Line2D.Float linearRegression(ArrayList<DataPoint> points) {
         float sumx=0.0f, sumy=0.0f, sumxx=0.0f, sumyy=0.0f, sumxy=0.0f;
         float mx, my, xxvar, yyvar, xyvar;
-        int n = points.size();
+        int n = 0;
         float minX, maxX;
 
         minX = points.get(0).getX();
         maxX = minX;
 
         for (DataPoint point: points) {
-            float x = point.getX();
-            float y = point.getY();
-            if (x < minX)
-                minX = x;
-            if (x > maxX)
-                maxX = x;
-            sumx += x;
-            sumy += y;
-            sumxx += x * x;
-            sumyy += y * y;
-            sumxy += x * y;
+            if (point.getEpisode().getRating() > 0) {
+                float x = point.getX();
+                float y = point.getY();
+                n++;
+                if (x < minX)
+                    minX = x;
+                if (x > maxX)
+                    maxX = x;
+                sumx += x;
+                sumy += y;
+                sumxx += x * x;
+                sumyy += y * y;
+                sumxy += x * y;
+            }
         }
         mx = sumx / n;
         my = sumy / n;

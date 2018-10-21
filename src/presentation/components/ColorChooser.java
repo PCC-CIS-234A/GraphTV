@@ -7,7 +7,7 @@ public class ColorChooser {
         double STEP = 0.6180339887f * 2 * Math.PI;
         double SQRT_2 = Math.sqrt(2);
 
-        double theta = STEP * w;
+        double theta = STEP * (w - 5);
         double s = Math.sin(theta);
         double c = Math.cos(theta);
 

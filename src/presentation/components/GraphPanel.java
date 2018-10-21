@@ -44,6 +44,8 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         Font popupFont;
         Font regularFont;
         Font titleFont;
+        Font pointFont;
+        Font innerPointFont;
     }
 
     private Sizes m_Sizes;
@@ -150,7 +152,9 @@ public class GraphPanel extends JPanel implements MouseInputListener {
 
         m_Sizes.popupFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.popupFontSize));
         m_Sizes.regularFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.regularFontSize));
-        m_Sizes.titleFont = new Font("TimesRoman", Font.PLAIN, Math.round(m_Sizes.titleFontSize));
+        m_Sizes.titleFont = new Font("TimesRoman", Font.BOLD, Math.round(m_Sizes.titleFontSize));
+        m_Sizes.pointFont = new Font("Helvetica", Font.BOLD, Math.round(1.8f * m_Sizes.pointSize));
+        m_Sizes.innerPointFont = new Font("Helvetica", Font.BOLD, Math.round(1.8f * m_Sizes.innerPointSize));
     }
 
     private void drawAxes(Graphics2D g2, int width, int height, float minRating, float maxRating) {
@@ -199,6 +203,11 @@ public class GraphPanel extends JPanel implements MouseInputListener {
                 DataPoint p = new DataPoint(Math.round(x), Math.round(y), episode);
                 m_Points.add(p);
                 // System.out.println(episode.getTitle() + "   " + episode.getSeasonNumber() + "   " + episode.getEpisodeNumber() + "  " + episode.getRating() + " " + episode.getNumVotes());
+            } else {
+                float x = m_Sizes.leftMargin + width * (i + 0.5f) / length;
+                float y = m_Sizes.topMargin + height - height * 0.5f;
+                DataPoint p = new DataPoint(Math.round(x), Math.round(y), episode);
+                m_Points.add(p);
             }
         }
     }
@@ -206,15 +215,35 @@ public class GraphPanel extends JPanel implements MouseInputListener {
     private void drawPoints(Graphics2D g2, int maxSeason) {
         for (DataPoint p: m_Points) {
             g2.setColor(Color.BLACK);
-            int left = Math.round(p.getX() - m_Sizes.pointRadius);
-            int top = Math.round(p.getY() - m_Sizes.pointRadius);
-            int innerLeft = Math.round(left + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
-            int innerTop = Math.round(top + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
 
-            g2.fillArc(left, top, Math.round(m_Sizes.pointSize), Math.round(m_Sizes.pointSize), 0, 360);
-            g2.setColor(ColorChooser.chooseColor(p.getEpisode().getSeasonNumber(), maxSeason));
-            g2.fillArc(innerLeft, innerTop,
-                    Math.round(m_Sizes.innerPointSize), Math.round(m_Sizes.innerPointSize), 0, 360);
+            if (p.getEpisode().getRating() > 0) {
+                int left = Math.round(p.getX() - m_Sizes.pointRadius);
+                int top = Math.round(p.getY() - m_Sizes.pointRadius);
+                int innerLeft = Math.round(left + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+                int innerTop = Math.round(top + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+                g2.fillArc(left, top, Math.round(m_Sizes.pointSize), Math.round(m_Sizes.pointSize), 0, 360);
+                g2.setColor(ColorChooser.chooseColor(p.getEpisode().getSeasonNumber(), maxSeason));
+                g2.fillArc(innerLeft, innerTop,
+                        Math.round(m_Sizes.innerPointSize), Math.round(m_Sizes.innerPointSize), 0, 360);
+            } else {
+                int left = Math.round(p.getX() - m_Sizes.pointRadius);
+                int top = Math.round(p.getY() + m_Sizes.pointRadius - m_Sizes.pointRadius / 4);
+                int innerLeft = Math.round(left + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+                int innerTop = Math.round(top + m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+                int shift = (int)Math.ceil(m_Sizes.pointRadius - m_Sizes.innerPointRadius);
+                g2.setColor(Color.BLACK);
+                g2.setFont(m_Sizes.innerPointFont);
+                g2.drawString("?", innerLeft - shift, innerTop - shift);
+                g2.drawString("?", innerLeft - shift, innerTop);
+                g2.drawString("?", innerLeft - shift, innerTop + shift);
+                g2.drawString("?", innerLeft, innerTop - shift);
+                g2.drawString("?", innerLeft, innerTop + shift);
+                g2.drawString("?", innerLeft + shift, innerTop - shift);
+                g2.drawString("?", innerLeft + shift, innerTop);
+                g2.drawString("?", innerLeft + shift, innerTop + shift);
+                g2.setColor(ColorChooser.chooseColor(p.getEpisode().getSeasonNumber(), maxSeason));
+                g2.drawString("?", innerLeft, innerTop);
+            }
         }
     }
 
@@ -259,8 +288,8 @@ public class GraphPanel extends JPanel implements MouseInputListener {
                 Math.round(x + m_Sizes.popupMargin + titleWidth), Math.round(y + 2 * m_Sizes.popupMargin + m_Sizes.popupTextHeight));
         centerText(g2, "Season: " + episode.getSeasonNumber(), x + width / 4, y + m_Sizes.popupMargin + 2 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
         centerText(g2, "Episode: " + episode.getEpisodeNumber(), x + width / 4, y + m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
-        centerText(g2, "Rating: " + episode.getRating(), x + 3 * width / 4, y + m_Sizes.popupMargin + 2 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
-        centerText(g2, "# Votes: " + episode.getNumVotes(), x + 3 * width / 4, y + m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "Rating: " + (episode.getRating() > 0 ? episode.getRating() : "?"), x + 3 * width / 4, y + m_Sizes.popupMargin + 2 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
+        centerText(g2, "Votes: " + (episode.getNumVotes() > 0 ? episode.getNumVotes() : "< 5"), x + 3 * width / 4, y + m_Sizes.popupMargin + 3 * (m_Sizes.popupMargin + m_Sizes.popupTextHeight));
     }
 
     private void centerText(Graphics2D g2, String text, float x, float y){

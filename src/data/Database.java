@@ -15,7 +15,8 @@ public class Database {
 
     // Some SQL queries.
     private static final String FIND_SHOWS_QUERY =
-            "SELECT TOP 50 tconst, primaryTitle, startYear, endYear, runtimeMinutes"
+            "SELECT TOP 50 tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
                     + " FROM title_basics"
                     + " WHERE titleType = 'tvSeries'"
                     + " AND primaryTitle COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ?;";
@@ -104,7 +105,8 @@ public class Database {
                         rs.getString("primaryTitle"),
                         rs.getInt("startYear"),
                         rs.getInt("endYear"),
-                        rs.getInt("runtimeMinutes")
+                        rs.getInt("runtimeMinutes"),
+                        rs.getInt("numEpisodes")
                 ));
             }
         } catch (Exception e) {

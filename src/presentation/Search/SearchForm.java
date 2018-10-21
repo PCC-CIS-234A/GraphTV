@@ -39,7 +39,7 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
                 // Initial data (empty)
                 new Object[][]{},
                 // Initial columns
-                new Object[] { "Title", "Start Year", "End Year", "Runtime" }
+                new Object[] { "Title", "Start Year", "End Year", "Runtime", "Episodes" }
         ) {
             // Do not let the user edit values in the table.
             @Override
@@ -57,6 +57,7 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
         showTable.getColumnModel().getColumn(1).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(2).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(3).setCellRenderer( centerRenderer );
+        showTable.getColumnModel().getColumn(4).setCellRenderer( centerRenderer );
 
         // Center column headers
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
@@ -68,7 +69,8 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = showTable.getSelectedRow();
-                if (row > -1) {
+                int numEpisodes = m_CurrentShows.get(row).getNumEpisodes();
+                if (row > -1 && numEpisodes > 0) {
                     seriesInfoButton.setEnabled(true);
                 } else {
                     seriesInfoButton.setEnabled(false);
@@ -130,7 +132,8 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
                             show.getTitle(),
                             emptyForZero(show.getStartYear()),
                             emptyForZero(show.getEndYear()),
-                            emptyForZero(show.getRuntimeMinutes())
+                            emptyForZero(show.getRuntimeMinutes()),
+                            emptyForZero(show.getNumEpisodes())
                     });
                 }
             }

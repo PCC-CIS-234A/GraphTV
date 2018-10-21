@@ -23,6 +23,7 @@ public class Controller {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         showForm(new SearchForm(), frame);
         // showForm(new InfoGraphForm("tt5370118", "KonoSuba - God's Blessing on This Wonderful World!"), frame);
+        // showForm(new InfoGraphForm("tt0112182", "Strange Luck"), frame);
     }
 
     public static void showForm(GUIForm form, JFrame frame) {

@@ -1,6 +1,7 @@
 package logic;
 
 import data.Database;
+import data.TitleData;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -11,10 +12,12 @@ public class Searcher {
     private String m_Pending = null;
     private boolean m_Searching = false;
     private Timer m_SearchDelayTimer;
+    private static final long DELAY = 100;
 
     public Searcher() {
         m_Listeners = new ArrayList<>();
         m_SearchDelayTimer = new Timer("Search Delay Timer");
+        TitleData.init();
     }
 
     public void search(String title) {
@@ -23,12 +26,12 @@ public class Searcher {
             @Override
             public void run() {
                 if (title == m_Pending) {
-                    ArrayList<Show> shows = Database.findShowsByTitle(title);
+                    ArrayList<Show> shows = TitleData.findShowsByTitle(title);
                     showsArrived(shows);
                 }
             }
         };
-        m_SearchDelayTimer.schedule(task, 500);
+        m_SearchDelayTimer.schedule(task, 100);
     }
 
     private void showsArrived(ArrayList<Show> shows) {

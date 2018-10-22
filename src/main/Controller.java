@@ -1,5 +1,6 @@
 package main;
 
+import data.TitleData;
 import presentation.GUIForm;
 import presentation.InfoGraph.InfoGraphForm;
 import presentation.Search.SearchForm;

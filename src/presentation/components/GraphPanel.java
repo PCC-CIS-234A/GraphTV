@@ -249,13 +249,15 @@ public class GraphPanel extends JPanel implements MouseInputListener {
         HashMap<Integer, ArrayList<DataPoint>> map = DataPoint.splitBySeason(m_Points);
         for (Integer seasonNumber: map.keySet()) {
             ArrayList<DataPoint> seasonPoints = map.get(seasonNumber);
-            Line2D.Float line = DataPoint.linearRegression(seasonPoints);
-            g2.setStroke(m_Sizes.regressionBorderStroke);
-            g2.setColor(Color.BLACK);
-            g2.drawLine((int)line.getX1(), (int)line.getY1(), (int)line.getX2(), (int)line.getY2());
-            g2.setStroke(m_Sizes.regressionStroke);
-            g2.setColor(ColorChooser.chooseColor(seasonNumber, maxSeason));
-            g2.drawLine((int)line.getX1(), (int)line.getY1(), (int)line.getX2(), (int)line.getY2());
+            if (seasonPoints.size() > 1) {
+                Line2D.Float line = DataPoint.linearRegression(seasonPoints);
+                g2.setStroke(m_Sizes.regressionBorderStroke);
+                g2.setColor(Color.BLACK);
+                g2.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
+                g2.setStroke(m_Sizes.regressionStroke);
+                g2.setColor(ColorChooser.chooseColor(seasonNumber, maxSeason));
+                g2.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
+            }
         }
         g2.setStroke(m_Sizes.regularStroke);
     }
@@ -316,6 +318,7 @@ public class GraphPanel extends JPanel implements MouseInputListener {
                 g2.translate(-left, -top);
             }
         }
+        g2.setColor(Color.BLACK);
     }
 
     private void drawSelectedInfo(Graphics2D g2, int panelWidth, int panelHeight) {

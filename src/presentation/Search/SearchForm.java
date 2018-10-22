@@ -69,9 +69,11 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = showTable.getSelectedRow();
-                int numEpisodes = m_CurrentShows.get(row).getNumEpisodes();
-                if (row > -1 && numEpisodes > 0) {
-                    seriesInfoButton.setEnabled(true);
+                if (row > -1) {
+                    if(m_CurrentShows.get(row).getNumEpisodes() > 0)
+                        seriesInfoButton.setEnabled(true);
+                    else
+                        seriesInfoButton.setEnabled(false);
                 } else {
                     seriesInfoButton.setEnabled(false);
                 }

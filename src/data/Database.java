@@ -21,6 +21,14 @@ public class Database {
                     + " WHERE titleType = 'tvSeries'"
                     + " AND primaryTitle COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ?;";
 
+    private static final String FIND_SHOWS_BY_ID_QUERY_FRONT =
+            "SELECT TOP 50 tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
+                    + " FROM title_basics"
+                    + " WHERE tconst IN (";
+    private static final String FIND_SHOWS_BY_ID_QUERY_BACK =
+            ") ORDER BY startYear DESC;";
+
     private static final String FETCH_EPISODES_QUERY =
             "SELECT	title_episode.tconst, seasonNumber, episodeNumber, primaryTitle, startYear, averageRating, numVotes"
                     + " FROM		title_episode"
@@ -96,6 +104,64 @@ public class Database {
 
             // Execute the query returning a result set
             rs = m_Statement.executeQuery();
+
+            // For each row in the result set, create a new Show object with the specified values
+            // and add it to the list of results.
+            while (rs.next()) {
+                shows.add(new Show(
+                        rs.getString("tconst"),
+                        rs.getString("primaryTitle"),
+                        rs.getInt("startYear"),
+                        rs.getInt("endYear"),
+                        rs.getInt("runtimeMinutes"),
+                        rs.getInt("numEpisodes")
+                ));
+            }
+        } catch (Exception e) {
+            System.err.println("Error: Interrupted or couldn't connect to database.");
+            e.printStackTrace();
+            m_Statement = null;
+            return null;
+        }
+        // Return the list of results. Will be an empty list if there was an error.
+        return shows;
+    }
+
+    /**
+     * Fetch a list of shows given an array of IDs.
+     *
+     * @param ids The ids to search for
+     * @return The list of shows with that text in their primaryTitle.
+     */
+    public static ArrayList<Show> findShowsByID(ArrayList<String> ids) {
+        ResultSet rs = null;
+        ArrayList<Show> shows = new ArrayList<>();
+
+        if (ids.size() == 0)
+            return shows;
+        try {
+            // Create a connection if there isn't one already
+            connect();
+
+            /* Sadly, this doesn't work in jtds-1.3.1.
+            "SELECT ... FROM ... WHERE id IN ?"
+            m_Statement = m_Connection.prepareStatement(FIND_SHOWS_BY_ID_QUERY);
+            Object[] idArray = new Object[ids.size()];
+            idArray = ids.toArray(idArray);
+            Array array = m_Connection.createArrayOf("NCHAR", idArray);
+            m_Statement.setArray(1, array);
+
+            Fortunately, this is not being passed user input directly, so the following is safe:
+            */
+            StringBuilder query = new StringBuilder();
+            for (int i = 0; i < ids.size(); i++) {
+                if (i != 0)
+                    query.append(",");
+                query.append("'" + ids.get(i) + "'");
+            }
+
+            // Execute the query returning a result set
+            rs = m_Connection.createStatement().executeQuery(FIND_SHOWS_BY_ID_QUERY_FRONT + query.toString() + FIND_SHOWS_BY_ID_QUERY_BACK);
 
             // For each row in the result set, create a new Show object with the specified values
             // and add it to the list of results.

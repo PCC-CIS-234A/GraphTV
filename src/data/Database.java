@@ -21,6 +21,13 @@ public class Database {
     private static final String PASSWORD = "IMDB001!";
 
     // Some SQL queries.
+    private static final String FIND_SHOWS_QUERY =
+            "SELECT TOP ? tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
+                    + " FROM title_basics"
+                    + " WHERE titleType = 'tvSeries'"
+                    + " AND primaryTitle COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ?;";
+
     private static final String FIND_SHOWS_BY_ID_QUERY_FRONT =
             "SELECT tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
                     + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
@@ -35,7 +42,7 @@ public class Database {
                     + " JOIN		title_basics ON title_episode.tconst = title_basics.tconst"
                     + " LEFT JOIN	title_ratings ON title_episode.tconst = title_ratings.tconst"
                     + " WHERE		parentTconst = ?"
-                    + " ORDER BY	seasonNumber, episodeNumber;";
+                    + " ORDER BY	ISNULL(seasonNumber, 9999), episodeNumber, title_episode.tconst;";
 
     // The one and only connection object
     private static Connection m_Connection = null;
@@ -81,6 +88,54 @@ public class Database {
         } catch (SQLException e) {
             System.err.println("Error! Couldn't connect to the database!");
         }
+    }
+
+    /**
+     * Fetch a list of shows that match the given text in their primaryTitle.
+     *
+     * @param text The text to search for
+     * @param maxShows  Maximum number of shows to return
+     * @return The list of shows with that text in their primaryTitle.
+     */
+    public static ArrayList<Show> findShowsByTitle(String text, int maxShows) {
+        ResultSet rs = null;
+        ArrayList<Show> shows = new ArrayList<>();
+
+        try {
+            // Create a connection if there isn't one already
+            connect();
+
+            // Prepare a SQL statement
+            m_Statement = m_Connection.prepareStatement(FIND_SHOWS_QUERY);
+
+            // First parameter in maximum number of shows to return
+            m_Statement.setInt(1, maxShows);
+            // Second parameter is the search text
+            m_Statement.setString(2, "%" + text + "%");
+
+            // Execute the query returning a result set
+            rs = m_Statement.executeQuery();
+
+            // For each row in the result set, create a new Show object with the specified values
+            // and add it to the list of results.
+            while (rs.next()) {
+                shows.add(new Show(
+                        rs.getString("tconst"),
+                        rs.getString("primaryTitle"),
+                        rs.getInt("startYear"),
+                        rs.getInt("endYear"),
+                        rs.getInt("runtimeMinutes"),
+                        rs.getInt("numEpisodes")
+                ));
+            }
+        } catch (Exception e) {
+            System.err.println("Error: Interrupted or couldn't connect to database.");
+            e.printStackTrace();
+            m_Statement = null;
+            return null;
+        }
+        // Return the list of results. Will be an empty list if there was an error.
+        return shows;
     }
 
     /**

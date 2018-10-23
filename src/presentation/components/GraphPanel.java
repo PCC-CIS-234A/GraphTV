@@ -372,8 +372,8 @@ public class GraphPanel extends JPanel implements MouseInputListener {
                 Math.round(x + m_Sizes.popupMargin + titleWidth), Math.round(oneLine));
         float column1 = x + width / 4;
         float column2 = x + 3 * width / 4;
-        centerText(g2, "Season: " + episode.getSeasonNumber(), column1, twoLines);
-        centerText(g2, "Episode: " + episode.getEpisodeNumber(), column1, threeLines);
+        centerText(g2, "Season: " + ((episode.getSeasonNumber() > 0) ? episode.getSeasonNumber() : "???"), column1, twoLines);
+        centerText(g2, "Episode: " + ((episode.getEpisodeNumber() > 0) ? episode.getEpisodeNumber() : "???"), column1, threeLines);
         centerText(g2, "Rating: " + (episode.getRating() > 0 ? episode.getRating() : "???"), column2, twoLines);
         centerText(g2, "Votes: " + (episode.getNumVotes() > 0 ? episode.getNumVotes() : "<5"), column2, threeLines);
     }

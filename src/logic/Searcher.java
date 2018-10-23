@@ -32,7 +32,7 @@ public class Searcher {
                 }
             }
         };
-        m_SearchDelayTimer.schedule(task, 100);
+        m_SearchDelayTimer.schedule(task, DELAY);
     }
 
     private void showsArrived(ArrayList<Show> shows) {

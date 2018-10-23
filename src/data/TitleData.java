@@ -37,19 +37,20 @@ public class TitleData {
         return titles;
     }
 
-    public static ArrayList<Show> findShowsByTitle(String title) {
+    public static ArrayList<Show> findShowsByTitle(String title, int maxShows) {
         ArrayList<String> ids = new ArrayList<>();
         ArrayList<Show> results = new ArrayList<>();
         int hits = 0;
         String titleLower = title.toLowerCase();
 
-        for (int i = 0; i < m_Titles.size() && hits < 50; i++) {
+        for (int i = 0; i < m_Titles.size() && hits < maxShows; i++) {
             if (m_Titles.get(i).getTitle().contains(titleLower)) {
                 // System.out.println(m_Titles.get(i).getID() + ": " + m_Titles.get(i).getTitle());
                 ids.add(m_Titles.get(i).getID());
                 hits++;
             }
         }
-        return Database.findShowsByID(ids);
+        // return Database.findShowsByID(ids);
+        return WebData.findShowsByID(ids);
     }
 }

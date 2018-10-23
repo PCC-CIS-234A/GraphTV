@@ -22,7 +22,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Up to 50 results will be shown, most recent first."/>
+          <text value="Up to 200 results will be shown, most recent first."/>
         </properties>
       </component>
       <grid id="f7c2e" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

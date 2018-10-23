@@ -11,14 +11,15 @@ public class TitleData {
     private static ArrayList<Title> m_Titles;
 
     public static void init() {
-        m_Titles = loadTitles("data/title_titles.tsv.gz");
+        m_Titles = loadTitles("title_titles.tsv.gz");
     }
 
     public static ArrayList<Title> loadTitles(String filename) {
         ArrayList<Title> titles = new ArrayList<>();
 
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(filename))));
+            InputStream inFile = TitleData.class.getResourceAsStream(filename);
+            BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(inFile)));
             String s;
             do {
                 s = in.readLine();

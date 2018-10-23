@@ -33,6 +33,7 @@ public class Database {
                     + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
                     + " FROM title_basics"
                     + " WHERE tconst IN (";
+
     private static final String FIND_SHOWS_BY_ID_QUERY_BACK =
             ") ORDER BY startYear DESC;";
 
@@ -91,6 +92,7 @@ public class Database {
     }
 
     /**
+<<<<<<< HEAD
      * Fetch a list of shows that match the given text in their primaryTitle.
      *
      * @param text The text to search for
@@ -139,6 +141,8 @@ public class Database {
     }
 
     /**
+=======
+>>>>>>> f48e441e96db53c413562e4513bf686f81cb76f3
      * Fetch a list of shows given an array of IDs.
      *
      * @param ids The ids to search for

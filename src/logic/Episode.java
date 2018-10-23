@@ -1,6 +1,7 @@
 package logic;
 
 import data.Database;
+import data.WebData;
 
 import java.util.ArrayList;
 
@@ -24,7 +25,8 @@ public class Episode {
     }
 
     public static ArrayList<Episode> fetchEpisodes(String id) {
-        return Database.fetchEpisodes(id);
+        // return Database.fetchEpisodes(id);
+        return WebData.fetchEpisodes(id);
     }
 
     public String getID() {

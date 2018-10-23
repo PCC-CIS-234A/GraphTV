@@ -11,18 +11,18 @@ import java.util.TimerTask;
 public class Database {
     // Connection string for connecting to SQL Server at CISDBSS, using the IMDB database.
     // Requires jtds.XXX.jar to be included in the project with the correct dependency set.
-    public static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://cisdbss.pcc.edu/IMDB";
+    /*
+    private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://cisdbss.pcc.edu/IMDB";
+    private static final String USERNAME = "275student";
+    private static final String PASSWORD = "275student";
+    */
+    private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://192.168.2.33/NEW_IMDB";
+    private static final String USERNAME = "IMDB";
+    private static final String PASSWORD = "IMDB001!";
 
     // Some SQL queries.
-    private static final String FIND_SHOWS_QUERY =
-            "SELECT TOP 50 tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
-                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
-                    + " FROM title_basics"
-                    + " WHERE titleType = 'tvSeries'"
-                    + " AND primaryTitle COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ?;";
-
     private static final String FIND_SHOWS_BY_ID_QUERY_FRONT =
-            "SELECT TOP 50 tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+            "SELECT tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
                     + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
                     + " FROM title_basics"
                     + " WHERE tconst IN (";
@@ -43,9 +43,7 @@ public class Database {
     private static Timer m_ConnectionCloseTimer = new Timer("DB Connection Timer");
     private static TimerTask m_ConnectionCloseTask = null;
     private static final long CONNECTION_KEEP_ALIVE = 120000L;
-    /**
-     * Create a new connection object if there isn't one already.
-     */
+
     private static void resetConnectionCloseTimer() {
         if (m_ConnectionCloseTask != null) {
             m_ConnectionCloseTask.cancel();
@@ -69,6 +67,9 @@ public class Database {
         m_ConnectionCloseTimer.schedule(m_ConnectionCloseTask, CONNECTION_KEEP_ALIVE);
     }
 
+    /**
+     * Create a new connection object if there isn't one already.
+     */
     private static void connect() {
         resetConnectionCloseTimer();
         if (m_Connection != null)
@@ -76,55 +77,10 @@ public class Database {
         try {
             // Create a database connection with the given username and password.
             // System.out.println("Opening database connection.");
-            m_Connection = DriverManager.getConnection(CONNECTION_STRING, "275student", "275student");
+            m_Connection = DriverManager.getConnection(CONNECTION_STRING, USERNAME, PASSWORD);
         } catch (SQLException e) {
             System.err.println("Error! Couldn't connect to the database!");
         }
-    }
-
-    /**
-     * Fetch a list of shows that match the given text in their primaryTitle.
-     *
-     * @param text The text to search for
-     * @return The list of shows with that text in their primaryTitle.
-     */
-    public static ArrayList<Show> findShowsByTitle(String text) {
-        ResultSet rs = null;
-        ArrayList<Show> shows = new ArrayList<>();
-
-        try {
-            // Create a connection if there isn't one already
-            connect();
-
-            // Prepare a SQL statement
-            m_Statement = m_Connection.prepareStatement(FIND_SHOWS_QUERY);
-
-            // This one has a single parameter for the role, so we bind the value of role to the parameter
-            m_Statement.setString(1, "%" + text + "%");
-
-            // Execute the query returning a result set
-            rs = m_Statement.executeQuery();
-
-            // For each row in the result set, create a new Show object with the specified values
-            // and add it to the list of results.
-            while (rs.next()) {
-                shows.add(new Show(
-                        rs.getString("tconst"),
-                        rs.getString("primaryTitle"),
-                        rs.getInt("startYear"),
-                        rs.getInt("endYear"),
-                        rs.getInt("runtimeMinutes"),
-                        rs.getInt("numEpisodes")
-                ));
-            }
-        } catch (Exception e) {
-            System.err.println("Error: Interrupted or couldn't connect to database.");
-            e.printStackTrace();
-            m_Statement = null;
-            return null;
-        }
-        // Return the list of results. Will be an empty list if there was an error.
-        return shows;
     }
 
     /**

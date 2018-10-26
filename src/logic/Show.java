@@ -15,6 +15,7 @@ public class Show {
     private int m_Votes;
     private String m_Type;
     private String m_ParentTitle;
+    private String m_ParentID;
     private String m_Genres;
 
     public Show(String id, String title, int start, int end, int minutes, int episodes) {
@@ -26,7 +27,7 @@ public class Show {
         m_NumEpisodes = episodes;
     }
 
-    public Show(String id, String title, String type, String parentTitle, int start, int minutes, float rating, int numVotes, String genres) {
+    public Show(String id, String title, String type, String parentTitle, int start, int minutes, float rating, int numVotes, String genres, int numEpisodes, String parentID) {
         m_ID = id;
         m_Title = title;
         m_Type = type;
@@ -36,6 +37,8 @@ public class Show {
         m_Rating = rating;
         m_Votes = numVotes;
         m_Genres = genres;
+        m_NumEpisodes = numEpisodes;
+        m_ParentID = parentID;
     }
 
     public static ArrayList<Show> findTopRatedShows(String showType, String genre, int minVotes) {
@@ -44,6 +47,10 @@ public class Show {
 
     public String getID() {
         return m_ID;
+    }
+
+    public String getParentID() {
+        return m_ParentID;
     }
 
     public String getTitle() {

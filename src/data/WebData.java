@@ -181,7 +181,9 @@ public class WebData {
                         stringToInt(show.get("runtimeMinutes")),
                         stringToFloat(show.get("averageRating")),
                         stringToInt(show.get("numVotes")),
-                        trimString(show.get("genres"))
+                        trimString(show.get("genres")),
+                        stringToInt(show.get("numEpisodes")),
+                        trimString(show.get("parentTconst"))
                 ));
             }
         } catch (MalformedURLException e) {

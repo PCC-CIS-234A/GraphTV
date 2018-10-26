@@ -23,6 +23,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
     private JComboBox typeComboBox;
     private JComboBox genreComboBox;
     private JTextField minVotesField;
+    private JButton seriesInfoButton;
 
     private static final String ALL_GENRES = "-- All Genres --";
     private static final String ALL_TYPES = "-- All Types --";
@@ -33,6 +34,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
     private DefaultTableModel m_ShowTableModel;
     private int m_MinVotes = 50000;
     private TopRatedSearcher m_Searcher;
+    private ArrayList<Show> m_CurrentShows;
 
     public TopRatedForm() {
         setupTypeCombo();
@@ -41,6 +43,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
         // setupTable();
         m_Searcher = new TopRatedSearcher();
         m_Searcher.addShowListener(this);
+        setupSeriesInfoButton();
         showTable();
     }
 
@@ -151,12 +154,16 @@ public class TopRatedForm extends GUIForm implements ShowListener {
 
     @Override
     public void showsArrived(ArrayList<Show> shows) {
+        m_CurrentShows = shows;
         setupTable();
         m_ShowTableModel.setRowCount(0);
         boolean hasParentTitle = false;
+        boolean hasEpisodes = false;
         for (Show show: shows) {
             if (show.getParentTitle() != "")
                 hasParentTitle = true;
+            if (show.getNumEpisodes() > 0)
+                hasEpisodes = true;
             m_ShowTableModel.addRow(new Object[]{
                     show.getTitle(),
                     show.getType(),
@@ -165,12 +172,17 @@ public class TopRatedForm extends GUIForm implements ShowListener {
                     emptyForZero(show.getRuntimeMinutes()),
                     emptyForZero(show.getRating()),
                     emptyForZero(show.getVotes()),
-                    show.getGenres()
+                    show.getGenres(),
+                    emptyForZero(show.getNumEpisodes())
             });
         }
         if (!hasParentTitle) {
             showTable.getColumnModel().getColumn(2).setMinWidth(0);
             showTable.getColumnModel().getColumn(2).setMaxWidth(0);
+        }
+        if (!hasEpisodes) {
+            showTable.getColumnModel().getColumn(8).setMinWidth(0);
+            showTable.getColumnModel().getColumn(8).setMaxWidth(0);
         }
     }
 
@@ -181,7 +193,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
                 // Initial data (empty)
                 new Object[][]{},
                 // Initial columns
-                new Object[] { "Show Title", "Type", "Series Title", "Start Year", "Runtime", "Rating", "Votes", "Genres" }
+                new Object[] { "Show Title", "Type", "Series Title", "Start Year", "Runtime", "Rating", "Votes", "Genres", "Episodes" }
         ) {
             // Do not let the user edit values in the table.
             @Override
@@ -202,6 +214,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
         showTable.getColumnModel().getColumn(5).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(6).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(7).setCellRenderer( centerRenderer );
+        showTable.getColumnModel().getColumn(8).setCellRenderer( centerRenderer );
 
         // Center column headers
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
@@ -216,9 +229,9 @@ public class TopRatedForm extends GUIForm implements ShowListener {
         showTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                /*
                 int row = showTable.getSelectedRow();
                 if (row > -1) {
+                    String type = m_CurrentShows.get(row).getType();
                     if(m_CurrentShows.get(row).getNumEpisodes() > 0)
                         seriesInfoButton.setEnabled(true);
                     else
@@ -226,7 +239,19 @@ public class TopRatedForm extends GUIForm implements ShowListener {
                 } else {
                     seriesInfoButton.setEnabled(false);
                 }
-                */
+            }
+        });
+    }
+
+    private void setupSeriesInfoButton() {
+        seriesInfoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = showTable.getSelectedRow();
+                if (m_CurrentShows.get(row).getParentID().equals(""))
+                    Controller.showSeriesInfo(m_CurrentShows.get(row).getID(), m_CurrentShows.get(row).getTitle());
+                else
+                    Controller.showSeriesInfo(m_CurrentShows.get(row).getParentID(), m_CurrentShows.get(row).getParentTitle());
             }
         });
     }

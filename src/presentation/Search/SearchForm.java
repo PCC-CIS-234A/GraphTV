@@ -45,7 +45,7 @@ public class SearchForm extends GUIForm implements ShowListener {
                 // Initial data (empty)
                 new Object[][]{},
                 // Initial columns
-                new Object[] { "Title", "Start Year", "End Year", "Runtime", "Genres", "Episodes" }
+                new Object[] { "Title", "Start Year", "End Year", "Runtime", "Rating", "Votes", "Genres", "Episodes" }
         ) {
             // Do not let the user edit values in the table.
             @Override
@@ -65,13 +65,15 @@ public class SearchForm extends GUIForm implements ShowListener {
         showTable.getColumnModel().getColumn(3).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(4).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(5).setCellRenderer( centerRenderer );
+        showTable.getColumnModel().getColumn(6).setCellRenderer( centerRenderer );
+        showTable.getColumnModel().getColumn(7).setCellRenderer( centerRenderer );
 
         // Center column headers
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
         // Adjust column widths
-        showTable.getColumnModel().getColumn(0).setMinWidth(400);
-        showTable.getColumnModel().getColumn(4).setMinWidth(150);
+        showTable.getColumnModel().getColumn(0).setMinWidth(250);
+        showTable.getColumnModel().getColumn(6).setMinWidth(150);
 
         showTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -149,6 +151,9 @@ public class SearchForm extends GUIForm implements ShowListener {
     private String emptyForZero(int val) {
         return (val != 0) ? "" + val : "";
     }
+    private String emptyForZeroFloat(float val) {
+        return (val != 0) ? "" + val : "";
+    }
 
     @Override
     public void showsArrived(ArrayList<Show> shows) {
@@ -163,6 +168,8 @@ public class SearchForm extends GUIForm implements ShowListener {
                             emptyForZero(show.getStartYear()),
                             emptyForZero(show.getEndYear()),
                             emptyForZero(show.getRuntimeMinutes()),
+                            emptyForZeroFloat(show.getRating()),
+                            emptyForZero(show.getVotes()),
                             show.getGenres(),
                             emptyForZero(show.getNumEpisodes())
                     });

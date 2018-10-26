@@ -22,26 +22,30 @@ public class Database {
 
     // Some SQL queries.
     private static final String FIND_SHOWS_QUERY =
-            "SELECT TOP ? tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+            "SELECT TOP ? title_basics.tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
                     + "	("
                     + "    SELECT		STRING_AGG(genre, ', ')"
                     + "    FROM		    title_genre"
                     + "    WHERE		tconst = title_basics.tconst"
                     + "	) AS genres"
-                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
+                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes,"
+                    + " numVotes, averageRating"
                     + " FROM title_basics"
+                    + " LEFT JOIN title_ratings ON title_basics.tconst = title_ratings.tconst"
                     + " WHERE titleType = 'tvSeries'"
                     + " AND primaryTitle COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ?;";
 
     private static final String FIND_SHOWS_BY_ID_QUERY_FRONT =
-            "SELECT tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+            "SELECT title_basics.tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
                     + "	("
                     + "    SELECT		STRING_AGG(genre, ', ')"
                     + "    FROM		    title_genre"
                     + "    WHERE		tconst = title_basics.tconst"
                     + "	) AS genres"
-                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
+                    + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes,"
+                    + " numVotes, averageRating"
                     + " FROM title_basics"
+                    + " LEFT JOIN title_ratings ON title_basics.tconst = title_ratings.tconst"
                     + " WHERE tconst IN (";
 
     private static final String FIND_SHOWS_BY_ID_QUERY_BACK =
@@ -136,6 +140,8 @@ public class Database {
                         rs.getInt("startYear"),
                         rs.getInt("endYear"),
                         rs.getInt("runtimeMinutes"),
+                        rs.getFloat("averageRating"),
+                        rs.getInt("numVotes"),
                         rs.getString("genres"),
                         rs.getInt("numEpisodes")
                 ));
@@ -195,6 +201,8 @@ public class Database {
                         rs.getInt("startYear"),
                         rs.getInt("endYear"),
                         rs.getInt("runtimeMinutes"),
+                        rs.getFloat("averageRating"),
+                        rs.getInt("numVotes"),
                         rs.getString("genres"),
                         rs.getInt("numEpisodes")
                 ));

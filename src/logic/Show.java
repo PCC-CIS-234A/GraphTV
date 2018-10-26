@@ -18,12 +18,14 @@ public class Show {
     private String m_ParentID;
     private String m_Genres;
 
-    public Show(String id, String title, int start, int end, int minutes, String genres, int episodes) {
+    public Show(String id, String title, int start, int end, int minutes, float rating, int numVotes, String genres, int episodes) {
         m_ID = id;
         m_Title = title;
         m_StartYear = start;
         m_EndYear = end;
         m_RuntimeMinutes = minutes;
+        m_Rating = rating;
+        m_Votes = numVotes;
         m_Genres = genres;
         m_NumEpisodes = episodes;
     }

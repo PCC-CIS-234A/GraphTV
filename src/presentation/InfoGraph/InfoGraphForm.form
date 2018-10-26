@@ -10,8 +10,8 @@
       <component id="8d8e6" class="presentation.components.GraphPanel" binding="graphPanel">
         <constraints border-constraint="Center"/>
         <properties>
-          <minimumSize width="1024" height="768"/>
-          <preferredSize width="1024" height="768"/>
+          <minimumSize width="1024" height="700"/>
+          <preferredSize width="1024" height="700"/>
         </properties>
       </component>
     </children>

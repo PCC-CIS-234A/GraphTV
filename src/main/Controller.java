@@ -4,6 +4,8 @@ import data.TitleData;
 import presentation.GUIForm;
 import presentation.InfoGraph.InfoGraphForm;
 import presentation.Search.SearchForm;
+import presentation.TabbedPaneForm;
+import presentation.TopRatedForm;
 
 import javax.swing.*;
 
@@ -22,9 +24,13 @@ public class Controller {
         JFrame frame = new JFrame();
         // Makes the application close when the window goes away.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        showForm(new SearchForm(), frame);
+        // showForm(new SearchForm(), frame);
         // showForm(new InfoGraphForm("tt5370118", "KonoSuba - God's Blessing on This Wonderful World!"), frame);
         // showForm(new InfoGraphForm("tt0112182", "Strange Luck"), frame);
+        TabbedPaneForm tabbedPaneForm = new TabbedPaneForm();
+        tabbedPaneForm.getTabbedPane().addTab("Series Title Search", null, new SearchForm().getRootPanel(), "Search for tv series by keyword and display episode info.");
+        tabbedPaneForm.getTabbedPane().addTab("Top Rated", null, new TopRatedForm().getRootPanel(), "Search for top rated shows by type and genre.");
+        showForm(tabbedPaneForm, frame);
     }
 
     public static void showForm(GUIForm form, JFrame frame) {

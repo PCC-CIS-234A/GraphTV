@@ -1,6 +1,7 @@
 package presentation.Search;
 
-import logic.Searcher;
+import logic.ShowListener;
+import logic.TitleSearcher;
 import logic.Show;
 import main.Controller;
 import presentation.GUIForm;
@@ -16,20 +17,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class SearchForm extends GUIForm implements Searcher.ShowListener {
+public class SearchForm extends GUIForm implements ShowListener {
     private JTextField searchText;
     private JTable showTable;
     private JPanel rootPanel;
     private JButton seriesInfoButton;
     private DefaultTableModel m_SearchModel;
-    private Searcher m_Searcher;
+    private TitleSearcher m_Searcher;
     private ArrayList<Show> m_CurrentShows = null;
 
     public SearchForm() {
         setupTable();
         setupSearchBox();
         setupSeriesInfoButton();
-        m_Searcher = new Searcher();
+        m_Searcher = new TitleSearcher();
         m_Searcher.addShowListener(this);
     }
 
@@ -122,6 +123,7 @@ public class SearchForm extends GUIForm implements Searcher.ShowListener {
     private String emptyForZero(int val) {
         return (val != 0) ? "" + val : "";
     }
+
     @Override
     public void showsArrived(ArrayList<Show> shows) {
         m_CurrentShows = shows;

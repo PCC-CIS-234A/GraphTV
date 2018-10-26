@@ -1,5 +1,9 @@
 package logic;
 
+import data.WebData;
+
+import java.util.ArrayList;
+
 public class Show {
     private String m_ID;
     private String m_Title;
@@ -7,6 +11,11 @@ public class Show {
     private int m_EndYear;
     private int m_RuntimeMinutes;
     private int m_NumEpisodes;
+    private float m_Rating;
+    private int m_Votes;
+    private String m_Type;
+    private String m_ParentTitle;
+    private String m_Genres;
 
     public Show(String id, String title, int start, int end, int minutes, int episodes) {
         m_ID = id;
@@ -15,6 +24,22 @@ public class Show {
         m_EndYear = end;
         m_RuntimeMinutes = minutes;
         m_NumEpisodes = episodes;
+    }
+
+    public Show(String id, String title, String type, String parentTitle, int start, int minutes, float rating, int numVotes, String genres) {
+        m_ID = id;
+        m_Title = title;
+        m_Type = type;
+        m_ParentTitle = parentTitle;
+        m_StartYear = start;
+        m_RuntimeMinutes = minutes;
+        m_Rating = rating;
+        m_Votes = numVotes;
+        m_Genres = genres;
+    }
+
+    public static ArrayList<Show> findTopRatedShows(String showType, String genre, int minVotes) {
+        return WebData.findTopRatedShows(showType, genre, minVotes);
     }
 
     public String getID() {
@@ -39,5 +64,25 @@ public class Show {
 
     public int getNumEpisodes() {
         return m_NumEpisodes;
+    }
+
+    public float getRating() {
+        return m_Rating;
+    }
+
+    public int getVotes() {
+        return m_Votes;
+    }
+
+    public String getType() {
+        return m_Type;
+    }
+
+    public String getParentTitle() {
+        return m_ParentTitle;
+    }
+
+    public String getGenres() {
+        return m_Genres;
     }
 }

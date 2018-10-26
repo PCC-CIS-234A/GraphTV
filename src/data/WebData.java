@@ -53,6 +53,7 @@ public class WebData {
                         stringToInt(rs.get("startYear")),
                         stringToInt(rs.get("endYear")),
                         stringToInt(rs.get("runtimeMinutes")),
+                        trimString(rs.get("genres")),
                         stringToInt(rs.get("numEpisodes"))
                 ));
             }

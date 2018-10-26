@@ -45,7 +45,7 @@ public class SearchForm extends GUIForm implements ShowListener {
                 // Initial data (empty)
                 new Object[][]{},
                 // Initial columns
-                new Object[] { "Title", "Start Year", "End Year", "Runtime", "Episodes" }
+                new Object[] { "Title", "Start Year", "End Year", "Runtime", "Genres", "Episodes" }
         ) {
             // Do not let the user edit values in the table.
             @Override
@@ -64,12 +64,14 @@ public class SearchForm extends GUIForm implements ShowListener {
         showTable.getColumnModel().getColumn(2).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(3).setCellRenderer( centerRenderer );
         showTable.getColumnModel().getColumn(4).setCellRenderer( centerRenderer );
+        showTable.getColumnModel().getColumn(5).setCellRenderer( centerRenderer );
 
         // Center column headers
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
         // Adjust column widths
         showTable.getColumnModel().getColumn(0).setMinWidth(400);
+        showTable.getColumnModel().getColumn(4).setMinWidth(150);
 
         showTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -161,6 +163,7 @@ public class SearchForm extends GUIForm implements ShowListener {
                             emptyForZero(show.getStartYear()),
                             emptyForZero(show.getEndYear()),
                             emptyForZero(show.getRuntimeMinutes()),
+                            show.getGenres(),
                             emptyForZero(show.getNumEpisodes())
                     });
                 }

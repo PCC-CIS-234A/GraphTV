@@ -23,6 +23,11 @@ public class Database {
     // Some SQL queries.
     private static final String FIND_SHOWS_QUERY =
             "SELECT TOP ? tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+                    + "	("
+                    + "    SELECT		STRING_AGG(genre, ', ')"
+                    + "    FROM		    title_genre"
+                    + "    WHERE		tconst = title_basics.tconst"
+                    + "	) AS genres"
                     + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
                     + " FROM title_basics"
                     + " WHERE titleType = 'tvSeries'"
@@ -30,6 +35,11 @@ public class Database {
 
     private static final String FIND_SHOWS_BY_ID_QUERY_FRONT =
             "SELECT tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
+                    + "	("
+                    + "    SELECT		STRING_AGG(genre, ', ')"
+                    + "    FROM		    title_genre"
+                    + "    WHERE		tconst = title_basics.tconst"
+                    + "	) AS genres"
                     + " (SELECT COUNT(*) FROM title_episode WHERE parentTconst = title_basics.tconst) AS numEpisodes"
                     + " FROM title_basics"
                     + " WHERE tconst IN (";
@@ -126,6 +136,7 @@ public class Database {
                         rs.getInt("startYear"),
                         rs.getInt("endYear"),
                         rs.getInt("runtimeMinutes"),
+                        rs.getString("genres"),
                         rs.getInt("numEpisodes")
                 ));
             }
@@ -184,6 +195,7 @@ public class Database {
                         rs.getInt("startYear"),
                         rs.getInt("endYear"),
                         rs.getInt("runtimeMinutes"),
+                        rs.getString("genres"),
                         rs.getInt("numEpisodes")
                 ));
             }

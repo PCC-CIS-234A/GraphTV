@@ -108,7 +108,7 @@ public class WebData {
             JSONArray array = (JSONArray) parser.parse(new InputStreamReader(stream));
 
             for (int i = 0; i < array.size(); i++) {
-                genres.add(new Genre(((String) ((JSONObject) array.get(i)).get("genre")).trim()));
+                genres.add(new Genre(trimString(((JSONObject) array.get(i)).get("genre"))));
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -130,7 +130,10 @@ public class WebData {
             JSONArray array = (JSONArray) parser.parse(new InputStreamReader(stream));
 
             for (int i = 0; i < array.size(); i++) {
-                showTypes.add(new ShowType(trimString(((JSONObject)array.get(i)).get("titleType"))));
+                showTypes.add(new ShowType(
+                        trimString(((JSONObject) array.get(i)).get("titleType")),
+                        trimString(((JSONObject) array.get(i)).get("pretty"))
+                ));
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

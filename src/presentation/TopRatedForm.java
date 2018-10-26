@@ -72,7 +72,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
 
         typeComboBox.addItem(ALL_TYPES);
         for (ShowType showType: m_ShowTypes)
-            typeComboBox.addItem(showType.getName());
+            typeComboBox.addItem(showType.getPretty());
 
         typeComboBox.addItemListener(new ItemListener() {
             @Override
@@ -83,7 +83,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
                     if (item == ALL_TYPES)
                         m_CurrentType = null;
                     else
-                        m_CurrentType = item;
+                        m_CurrentType = m_ShowTypes.get(typeComboBox.getSelectedIndex() - 1).getTitleType();
                     showTable();
                 }
             }

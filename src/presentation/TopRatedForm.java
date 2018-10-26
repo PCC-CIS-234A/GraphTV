@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class TopRatedForm extends GUIForm implements ShowListener {
@@ -24,6 +25,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
     private JComboBox genreComboBox;
     private JTextField minVotesField;
     private JButton seriesInfoButton;
+    private JButton showIMDBPageButton;
 
     private static final String ALL_GENRES = "-- All Genres --";
     private static final String ALL_TYPES = "-- All Types --";
@@ -35,6 +37,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
     private int m_MinVotes = 50000;
     private TopRatedSearcher m_Searcher;
     private ArrayList<Show> m_CurrentShows;
+    private Show m_SelectedShow = null;
 
     public TopRatedForm() {
         setupTypeCombo();
@@ -44,6 +47,7 @@ public class TopRatedForm extends GUIForm implements ShowListener {
         m_Searcher = new TopRatedSearcher();
         m_Searcher.addShowListener(this);
         setupSeriesInfoButton();
+        setupShowIMDBPageButton();
         showTable();
     }
 
@@ -220,9 +224,9 @@ public class TopRatedForm extends GUIForm implements ShowListener {
         ((DefaultTableCellRenderer)showTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
         // Adjust column widths
-        showTable.getColumnModel().getColumn(0).setMinWidth(250);
+        showTable.getColumnModel().getColumn(0).setMinWidth(200);
         showTable.getColumnModel().getColumn(1).setMinWidth(80);
-        showTable.getColumnModel().getColumn(2).setMinWidth(250);
+        showTable.getColumnModel().getColumn(2).setMinWidth(200);
         showTable.getColumnModel().getColumn(2).setMaxWidth(250);
         showTable.getColumnModel().getColumn(7).setMinWidth(180);
 
@@ -231,13 +235,17 @@ public class TopRatedForm extends GUIForm implements ShowListener {
             public void valueChanged(ListSelectionEvent e) {
                 int row = showTable.getSelectedRow();
                 if (row > -1) {
-                    String type = m_CurrentShows.get(row).getType();
+                    m_SelectedShow = m_CurrentShows.get(row);
+                    String type = m_SelectedShow.getType();
                     if(m_CurrentShows.get(row).getNumEpisodes() > 0)
                         seriesInfoButton.setEnabled(true);
                     else
                         seriesInfoButton.setEnabled(false);
+                    showIMDBPageButton.setEnabled(true);
                 } else {
+                    m_SelectedShow = null;
                     seriesInfoButton.setEnabled(false);
+                    showIMDBPageButton.setEnabled(false);
                 }
             }
         });
@@ -252,6 +260,21 @@ public class TopRatedForm extends GUIForm implements ShowListener {
                     Controller.showSeriesInfo(m_CurrentShows.get(row).getID(), m_CurrentShows.get(row).getTitle());
                 else
                     Controller.showSeriesInfo(m_CurrentShows.get(row).getParentID(), m_CurrentShows.get(row).getParentTitle());
+            }
+        });
+    }
+
+    private void setupShowIMDBPageButton() {
+        showIMDBPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    Desktop.getDesktop().browse(
+                            new URL("http://www.imdb.com/title/" + m_SelectedShow.getID()).toURI()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

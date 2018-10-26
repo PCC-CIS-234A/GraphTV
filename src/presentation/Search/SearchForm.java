@@ -13,8 +13,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class SearchForm extends GUIForm implements ShowListener {
@@ -22,14 +24,17 @@ public class SearchForm extends GUIForm implements ShowListener {
     private JTable showTable;
     private JPanel rootPanel;
     private JButton seriesInfoButton;
+    private JButton showIMDBPageButton;
     private DefaultTableModel m_SearchModel;
     private TitleSearcher m_Searcher;
     private ArrayList<Show> m_CurrentShows = null;
+    private Show m_SelectedShow = null;
 
     public SearchForm() {
         setupTable();
         setupSearchBox();
         setupSeriesInfoButton();
+        setupShowIMDBPageButton();
         m_Searcher = new TitleSearcher();
         m_Searcher.addShowListener(this);
     }
@@ -71,12 +76,16 @@ public class SearchForm extends GUIForm implements ShowListener {
             public void valueChanged(ListSelectionEvent e) {
                 int row = showTable.getSelectedRow();
                 if (row > -1) {
-                    if(m_CurrentShows.get(row).getNumEpisodes() > 0)
+                    m_SelectedShow = m_CurrentShows.get(row);
+                    if(m_SelectedShow.getNumEpisodes() > 0)
                         seriesInfoButton.setEnabled(true);
                     else
                         seriesInfoButton.setEnabled(false);
+                    showIMDBPageButton.setEnabled(true);
                 } else {
+                    m_SelectedShow = null;
                     seriesInfoButton.setEnabled(false);
+                    showIMDBPageButton.setEnabled(false);
                 }
             }
         });
@@ -107,6 +116,21 @@ public class SearchForm extends GUIForm implements ShowListener {
             public void actionPerformed(ActionEvent e) {
                 int row = showTable.getSelectedRow();
                 Controller.showSeriesInfo(m_CurrentShows.get(row).getID(), m_CurrentShows.get(row).getTitle());
+            }
+        });
+    }
+
+    private void setupShowIMDBPageButton() {
+        showIMDBPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    Desktop.getDesktop().browse(
+                            new URL("http://www.imdb.com/title/" + m_SelectedShow.getID()).toURI()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

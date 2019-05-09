@@ -11,15 +11,15 @@ import java.util.TimerTask;
 public class Database {
     // Connection string for connecting to SQL Server at CISDBSS, using the IMDB database.
     // Requires jtds.XXX.jar to be included in the project with the correct dependency set.
-    /*
+
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://cisdbss.pcc.edu/IMDB";
     private static final String USERNAME = "275student";
     private static final String PASSWORD = "275student";
-    */
+    /*
     private static final String CONNECTION_STRING = "jdbc:jtds:sqlserver://192.168.2.33/NEW_IMDB";
     private static final String USERNAME = "IMDB";
     private static final String PASSWORD = "IMDB001!";
-
+    */
     // Some SQL queries.
     private static final String FIND_SHOWS_QUERY =
             "SELECT TOP ? title_basics.tconst, primaryTitle, startYear, endYear, runtimeMinutes,"
